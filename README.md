@@ -92,3 +92,64 @@ You should receive a response from the server similar to this:
     ]
 }
 ```
+
+## API Endpoints
+
+### Public Endpoints
+
+🔓 `GET /api/wishlist/items`
+
+Get all items from the wishlist.
+
+🔓 `GET /api/wishlist/item`
+
+Get an item from the wishlist.
+The request body must include the ID of the item you want to retrieve as follows:
+
+```json
+{
+    "id": "c0PGnhCeb"
+}
+```
+
+### Protected Endpoints
+
+These endpoints require the request to include an access token issued by Auth0 in the authorization header.
+
+🔐 `POST /api/wishlist/item`
+
+Add an item to the wishlist.
+The request body must include the item description as follows:
+
+```json
+{
+  "item": "nitendo switch"
+}
+```
+
+🔐 `PUT /api/wishlist/item`
+
+Update an item from the wishlist.
+The request body must include the ID of item ID you want to update and the new description of the item as follows:
+
+```json
+{
+    "id": "Ww_1KHteq",
+    "description": "nintendo console"
+}
+```
+
+🔐 `DELETE /api/wishlist/items`
+
+Remove all items from the wishlist.
+
+🔐 `DELETE /api/wishlist/item`
+
+Remove an item from the wishlist.
+The request body must include the ID of the item you want to remove as follows:
+
+```json
+{
+    "id": "_SdDBfnbgw"
+}
+```
