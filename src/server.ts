@@ -1,13 +1,13 @@
-const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const dotenv = require("dotenv");
+import * as dotenv from "dotenv";
+import express, { Request, Response, NextFunction } from "express";
+import cors from "cors";
+import helmet from "helmet";
 
-const { wishlistRouter } = require("./wishlist/wishlist.router");
+import { wishlistRouter } from "./wishlist/wishlist.router";
 
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT: number = parseInt(process.env.PORT as string, 10);
 
 const app = express();
 const apiRouter = express.Router();
@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", apiRouter);
 apiRouter.use("/wishlist", wishlistRouter);
 
-app.use(function (err, req, res, next) {
+app.use(function (err: Error, req: Request, res: Response, next: NextFunction) {
   console.error(err.stack);
   res.status(500).send(err.message);
 });

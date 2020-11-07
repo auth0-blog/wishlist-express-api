@@ -1,10 +1,10 @@
-const express = require("express");
-const { checkJwt } = require("../authz/check-jwt");
-const shortid = require("shortid");
+import express, { Router } from "express";
+import { checkJwt } from "../authz/check-jwt";
+import shortid from "shortid";
 
-const { db, collection } = require("../data/db");
+import { db, collection, WishlistItem } from "../data/db";
 
-const wishlistRouter = express.Router();
+export const wishlistRouter: Router = express.Router();
 
 wishlistRouter.get("/items", async (request, response) => {
   const rows = db.get(collection);
@@ -13,7 +13,7 @@ wishlistRouter.get("/items", async (request, response) => {
 });
 
 wishlistRouter.get("/item", async (request, response) => {
-  const id = request.body.id;
+  const id: string = request.body.id;
 
   const item = db.get(collection).filter({ id });
 
@@ -25,12 +25,14 @@ wishlistRouter.use(checkJwt);
 wishlistRouter.post("/item", async (request, response) => {
   console.log(`Add to WishList  ${request.body.item}`);
 
-  const item = request.body.item;
+  const item: WishlistItem = request.body.item;
 
   db.get(collection)
     .push({
       id: shortid.generate(),
-      description: item,
+      name: item.name,
+      description: item.description,
+      url: item.url,
     })
     .write();
 
@@ -38,16 +40,16 @@ wishlistRouter.post("/item", async (request, response) => {
 });
 
 wishlistRouter.put("/item", async (request, response) => {
-  const id = request.body.id;
-  const description = request.body.description;
+  const item: WishlistItem = request.body;
+  const { id, ...itemProperties } = item;
 
-  db.get(collection).find({ id }).assign({ description }).write();
+  db.get(collection).find({ id }).assign(itemProperties).write();
 
   response.status(200).send("updated item in the wish list");
 });
 
 wishlistRouter.delete("/item", async (request, response) => {
-  const id = request.body.id;
+  const id: string = request.body.id;
 
   db.get(collection).remove({ id }).write();
 
@@ -59,7 +61,3 @@ wishlistRouter.delete("/items", async (request, response) => {
 
   response.status(200).send(`cleared items`);
 });
-
-module.exports = {
-  wishlistRouter,
-};
