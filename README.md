@@ -72,7 +72,9 @@ Now, **follow these steps to get the Auth0 Domain value**:
 
 - **Click on the image above, please, if you have any doubt on how to get the Auth0 Domain value**.
 
-With the `.env` configuration values set, run the API server by issuing the following command:
+With the `.env` configuration values set, you need to reload the project so that Express can see these new environment variables.
+
+**To reload the project, refresh the Glitch project page.**
 
 ### 4. Test the Live Server
 
@@ -114,6 +116,53 @@ You should the following response from the server (the `id`'s will vary):
     }
 ]
 ```
+
+### Test a protected endpoint
+
+You need an access token to call any of the protected API endpoints.
+
+Try to make the following request:
+
+```bash
+curl https://<random-long-string>.glitch.me/api/wishlist/reset
+```
+
+You'll get the following response error:
+
+```bash
+No authorization token was found
+```
+
+To get an access token, head back to your API configuration page in the Auth0 Dashboard.
+
+Click on the "Test" tab and locate the "Sending the token to the API".
+
+Click on the "cURL" tab.
+
+You should see something like this:
+
+```bash
+curl --request GET \
+  --url http://path_to_your_api/ \
+  --header 'authorization: really-long-string'
+```
+
+Copy and paste that value in a text editor.
+
+In the value of the `--header` parameter, the value of `authorization` is your access token.
+
+Replace the value of the `--url` parameter with your `GET api/wishlist/reset` endpoint URL:
+
+```bash
+curl --request GET \
+  --url curl https://<random-long-string>.glitch.me/api/wishlist/reset \
+  --header 'authorization: really-long-string'
+```
+
+Copy and paste the updated cURL command into a terminal window and execute it. You should now get a valid response.
+
+Try calling any of the API endpoints outlined in the next section.
+
 
 ## API Endpoints
 
