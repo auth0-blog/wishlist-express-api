@@ -34,7 +34,7 @@ Keep page open to complete the next step.
 
 Open this Glitch project:
 
-[https://glitch.com/edit/#!/auth0-blog-wishlist-express-api-1](https://glitch.com/edit/#!/auth0-blog-wishlist-express-api-1)
+[https://glitch.com/edit/#!/auth0-blog-wishlist-api-glitch](https://glitch.com/edit/#!/auth0-blog-wishlist-api-glitch)
 
 Click on the "Remix to Edit" button in the top-right corner.
 
