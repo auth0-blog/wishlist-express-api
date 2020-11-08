@@ -1,63 +1,119 @@
 import express, { Router } from "express";
 import { checkJwt } from "../authz/check-jwt";
-import shortid from "shortid";
 
-import { db, collection, WishlistItem } from "../data/db";
+import { wishlistDb, collection } from "../data/wishlist.db";
+import {
+  findAllItems,
+  findItemById,
+  generateId,
+  removeAllItems,
+  removeItemById,
+  resetItems,
+  updateItemById,
+} from "./wishlist.service";
+import { BaseItem } from "./base-item.interface";
 
 export const wishlistRouter: Router = express.Router();
+const wishlistItemsRouter: Router = express.Router();
 
-wishlistRouter.get("/items", async (request, response) => {
-  const rows = db.get(collection);
+wishlistRouter.use("/items", wishlistItemsRouter);
 
-  response.json({ items: rows });
+// GET /api/wishlist/reset
+
+wishlistRouter.get("/reset", checkJwt, async (request, response) => {
+  const items = await resetItems();
+
+  response.status(200).send(items);
 });
 
-wishlistRouter.get("/item", async (request, response) => {
-  const id: string = request.body.id;
+// GET /api/wishlist/items
 
-  const item = db.get(collection).filter({ id });
+wishlistItemsRouter.get("/", async (request, response) => {
+  const rows = findAllItems();
 
-  response.json({ item });
+  response.status(200).send(rows || []);
 });
 
-wishlistRouter.use(checkJwt);
+// GET /api/wishlist/items/:id
 
-wishlistRouter.post("/item", async (request, response) => {
-  console.log(`Add to WishList  ${request.body.item}`);
+wishlistItemsRouter.get("/:id", async (request, response) => {
+  const id = request.params.id as string;
 
-  const item: WishlistItem = request.body.item;
+  const existingItem = findItemById(id);
 
-  db.get(collection)
+  if (existingItem === undefined) {
+    response.sendStatus(404);
+    return;
+  }
+
+  response.json(existingItem);
+});
+
+wishlistItemsRouter.use(checkJwt);
+
+// POST /api/wishlist/items
+
+wishlistItemsRouter.post("/", async (request, response) => {
+  console.log(`Add to WishList  ${request.body}`);
+
+  const item = request.body as BaseItem;
+  const id = generateId();
+
+  wishlistDb
+    .get(collection)
     .push({
-      id: shortid.generate(),
+      id,
       name: item.name,
       description: item.description,
       url: item.url,
     })
     .write();
 
-  response.status(200).send("added item to wish list");
+  const newItem = wishlistDb.get(collection).find({ id });
+
+  response.status(201).json(newItem);
 });
 
-wishlistRouter.put("/item", async (request, response) => {
-  const item: WishlistItem = request.body;
-  const { id, ...itemProperties } = item;
+// PUT /api/wishlist/items/:id
 
-  db.get(collection).find({ id }).assign(itemProperties).write();
+wishlistItemsRouter.put("/:id", async (request, response) => {
+  const id = request.params.id as string;
 
-  response.status(200).send("updated item in the wish list");
+  const updatedItemProperties = request.body as BaseItem;
+
+  const existingItem = findItemById(id);
+
+  if (existingItem === undefined) {
+    response.sendStatus(404);
+    return;
+  }
+
+  const updatedItem = updateItemById(id, updatedItemProperties);
+
+  response.status(200).send(updatedItem);
 });
 
-wishlistRouter.delete("/item", async (request, response) => {
-  const id: string = request.body.id;
+// DELETE /api/wishlist/items
 
-  db.get(collection).remove({ id }).write();
+wishlistItemsRouter.delete("/", async (request, response) => {
+  removeAllItems();
 
-  response.status(200).send(`cleared item`);
+  response.sendStatus(204);
 });
 
-wishlistRouter.delete("/items", async (request, response) => {
-  db.get(collection).remove().write();
+// DELETE /api/wishlist/items/:id
 
-  response.status(200).send(`cleared items`);
+wishlistItemsRouter.delete("/:id", async (request, response) => {
+  const id = request.params.id as string;
+
+  const existingItem = findItemById(id);
+
+  if (existingItem === undefined) {
+    response.sendStatus(404);
+    return;
+  }
+
+  removeItemById(id);
+
+  response.sendStatus(204);
 });

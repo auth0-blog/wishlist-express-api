@@ -26,5 +26,5 @@ app.use(function (err: Error, req: Request, res: Response, next: NextFunction) {
 });
 
 app.listen(PORT, () => {
-  console.log(`API serving resources on PORT:${PORT}`);
+  console.log(`Wishlist API serving resources on PORT:${PORT}`);
 });

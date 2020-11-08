@@ -84,90 +84,270 @@ Click on the "Live App" tab and copy the first URL right under the buttons. This
 https://<random-long-string>.glitch.me
 ```
 
-Open the terminal and test if the server is working by making the following request:
+Open the terminal and test if the server is working by making the following request to get all the wishlist items:
 
 ```bash
 curl https://<random-long-string>.glitch.me/api/wishlist/items
 ```
 
-You should receive a response from the server similar to this:
+You should the following response from the server (the `id`'s will vary):
 
-```bash
-{
-    "items": [
-        {
-            "id": "IHbQsGGh-",
-            "description": "toilet paper"
-        },
-        {
-            "id": "UBihgXerxm",
-            "description": "face mask"
-        },
-        {
-            "id": "8TL-dp-Q1F",
-            "description": "hand sanitizer"
-        }
-    ]
-}
+```json
+[
+    {
+        "id": "K@MyH58Ej",
+        "name": "Apple iPhone 12",
+        "description": "128GB, White",
+        "url": "https://www.amazon.com/dp/B08L5Q1L2Q/"
+    },
+    {
+        "id": "oss94d7YUZ",
+        "name": "PlayStation 5 Console",
+        "description": "Ultra-high speed SSD and 3D Audio",
+        "url": "https://www.amazon.com/PlayStation-5-Console/dp/B08FC5L3RG"
+    },
+    {
+        "id": "7ovKgpue7a",
+        "name": "Xbox Series S Console",
+        "description": "Smallest, sleekest Xbox console ever",
+        "url": "https://www.amazon.com/Xbox-S/dp/B08G9J44ZN"
+    }
+]
 ```
 
 ## API Endpoints
 
-### Public Endpoints
+### 🔓 List Items
 
-🔓 `GET /api/wishlist/items`
+Lists all items from the wishlist.
 
-Get all items from the wishlist.
+```bash
+GET /api/wishlist/items
+```
 
-🔓 `GET /api/wishlist/item`
+#### Response
 
-Get an item from the wishlist.
-The request body must include the ID of the item you want to retrieve as follows:
+```bash
+Status: 200 OK
+```
+
+```json
+[
+    {
+        "id": "ep9EVXNoCz",
+        "name": "PlayStation 5 Console",
+        "description": "Ultra-high speed SSD and 3D Audio",
+        "url": "https://www.amazon.com/PlayStation-5-Console/dp/B08FC5L3RG"
+    }
+]
+```
+
+### 🔓 Get an item
+
+Provides information an item from the wishlist.
+
+```bash
+GET /api/wishlist/items/:id
+```
+
+#### Response
+
+##### If item is not found
+
+```bash
+Status: 404 Not Found
+```
+
+##### If item is found
+
+```bash
+Status: 200 OK
+```
 
 ```json
 {
-    "id": "c0PGnhCeb"
+    "id": "oss94d7YUZ",
+    "name": "PlayStation 5 Console",
+    "description": "Ultra-high speed SSD and 3D Audio",
+    "url": "https://www.amazon.com/PlayStation-5-Console/dp/B08FC5L3RG"
 }
 ```
 
-### Protected Endpoints
+> 🔐 Protected Endpoints: These endpoints require the request to include an access token issued by Auth0 in the authorization header.
 
-These endpoints require the request to include an access token issued by Auth0 in the authorization header.
+### 🔐 Create an item for the authenticated user
 
-🔐 `POST /api/wishlist/item`
+Creates an item in the wishlist for the authenticated user.
 
-Add an item to the wishlist.
-The request body must include the item description as follows:
+```bash
+POST /api/wishlist/items
+```
+
+#### Input
+
+| Name          | Type       | Description                                       |
+|---------------|:-----------|:--------------------------------------------------|
+| `name`        | `string`   | **Required**. The name of the item.               |
+| `description` | `string`   | **Required**. The description of the item.        |
+| `url`         | `string`   | **Required**. The URL where you can buy the item. |
+
+##### Example
 
 ```json
 {
-  "item": "nitendo switch"
+    "name": "Apple iPhone 12",
+    "description": "128GB, White",
+    "url": "https://www.amazon.com/dp/B08L5Q1L2Q/"
 }
 ```
 
-🔐 `PUT /api/wishlist/item`
+#### Response
+
+```bash
+Status: 201 Created
+```
+
+```json
+{
+    "id": "QvcDfWMwg",
+    "name": "Apple iPhone 12",
+    "description": "128GB, White",
+    "url": "https://www.amazon.com/dp/B08L5Q1L2Q/"
+}
+```
+
+### 🔐 Update an item
 
 Update an item from the wishlist.
-The request body must include the ID of item ID you want to update and the new description of the item as follows:
+
+```bash
+PUT /api/wishlist/items/:id
+```
+
+#### Input
+
+| Name          | Type       | Description                                       |
+|---------------|:-----------|:--------------------------------------------------|
+| `name`        | `string`   | **Required**. The name of the item.               |
+| `description` | `string`   | **Required**. The description of the item.        |
+| `url`         | `string`   | **Required**. The URL where you can buy the item. |
+
+If you only need to update some of the item properties, leave the other values as they are.
+                             
+##### Example
+
+Take the following item as an example: 
 
 ```json
 {
-    "id": "Ww_1KHteq",
-    "description": "nintendo console"
+    "name": "PlayStation 5 Console",
+    "description": "Ultra-high speed SSD and 3D Audio",
+    "url": "https://www.amazon.com/PlayStation-5-Console/dp/B08FC5L3RG"
 }
 ```
 
-🔐 `DELETE /api/wishlist/items`
+If you want to update the description only, you'll send a request body like the following:
+
+```json
+{
+    "name": "PlayStation 5",
+    "description": "Ultra-high speed SSD and 3D Audio",
+    "url": "https://www.amazon.com/PlayStation-5-Console/dp/B08FC5L3RG"
+}
+```
+
+#### Response
+
+##### If item is not found
+
+```bash
+Status: 404 Not Found
+```
+
+##### If item is found
+
+```bash
+Status: 200 OK
+```
+
+```bash
+{
+    "id": "zAvIQGhn$b",
+    "name": "PlayStation 5",
+    "description": "Ultra-high speed SSD and 3D Audio",
+    "url": "https://www.amazon.com/PlayStation-5-Console/dp/B08FC5L3RG"
+}
+```
+
+### 🔐 Remove all items
 
 Remove all items from the wishlist.
 
-🔐 `DELETE /api/wishlist/item`
+```bash
+DELETE /api/wishlist/items
+```
+
+#### Response
+
+```bash
+Status: 204 No Content
+```
+
+### 🔐 Remove an item
 
 Remove an item from the wishlist.
-The request body must include the ID of the item you want to remove as follows:
+
+```
+DELETE /api/wishlist/items/:id
+```
+
+#### Response
+
+##### If item is not found
+
+```bash
+Status: 404 Not Found
+```
+
+##### If item is found
+
+```bash
+Status: 204 No Content
+```
+
+### 🔐 Reset the list
+
+Reset the wishlist database to its default values.
+
+```bash
+GET /api/wishlist/reset
+```
+
+#### Response
+
+```bash
+Status: 200 OK
+```
 
 ```json
-{
-    "id": "_SdDBfnbgw"
-}
+[
+    {
+        "id": "K@MyH58Ej",
+        "name": "Apple iPhone 12",
+        "description": "128GB, White",
+        "url": "https://www.amazon.com/dp/B08L5Q1L2Q/"
+    },
+    {
+        "id": "oss94d7YUZ",
+        "name": "PlayStation 5 Console",
+        "description": "Ultra-high speed SSD and 3D Audio",
+        "url": "https://www.amazon.com/PlayStation-5-Console/dp/B08FC5L3RG"
+    },
+    {
+        "id": "7ovKgpue7a",
+        "name": "Xbox Series S Console",
+        "description": "Smallest, sleekest Xbox console ever",
+        "url": "https://www.amazon.com/Xbox-S/dp/B08G9J44ZN"
+    }
+]
 ```

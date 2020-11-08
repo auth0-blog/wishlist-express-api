@@ -20,6 +20,6 @@ export const checkJwt = jwt({
   }),
 
   audience: audience,
-  issuer: domain,
+  issuer: `https://${domain}/`,
   algorithms: ["RS256"],
 });
