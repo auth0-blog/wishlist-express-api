@@ -144,7 +144,7 @@ You should see something like this:
 ```bash
 curl --request GET \
   --url http://path_to_your_api/ \
-  --header 'authorization: really-long-string'
+  --header 'authorization: Bearer really-long-string'
 ```
 
 Copy and paste that value in a text editor.
@@ -155,8 +155,8 @@ Replace the value of the `--url` parameter with your `GET api/wishlist/reset` en
 
 ```bash
 curl --request GET \
-  --url curl https://<random-long-string>.glitch.me/api/wishlist/reset \
-  --header 'authorization: really-long-string'
+  --url https://<random-long-string>.glitch.me/api/wishlist/reset \
+  --header 'authorization: Bearer really-long-string'
 ```
 
 Copy and paste the updated cURL command into a terminal window and execute it. You should now get a valid response.
