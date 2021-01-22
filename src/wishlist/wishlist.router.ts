@@ -18,9 +18,11 @@ const wishlistItemsRouter: Router = express.Router();
 
 wishlistRouter.use("/items", wishlistItemsRouter);
 
+wishlistItemsRouter.use(checkJwt);
+
 // GET /api/wishlist/reset
 
-wishlistRouter.get("/reset", checkJwt, async (request, response) => {
+wishlistRouter.get("/reset", async (request, response) => {
   const items = await resetItems();
 
   response.status(200).send(items);
@@ -48,8 +50,6 @@ wishlistItemsRouter.get("/:id", async (request, response) => {
 
   response.json(existingItem);
 });
-
-wishlistItemsRouter.use(checkJwt);
 
 // POST /api/wishlist/items
 
